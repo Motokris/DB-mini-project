@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem
 import mysql.connector
 
 
@@ -20,7 +20,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.Tabs = QtWidgets.QTabWidget(self.centralwidget)
-        self.Tabs.setGeometry(QtCore.QRect(0, 0, 1031, 471))
+        self.Tabs.setGeometry(QtCore.QRect(10, 0, 1031, 471))
         self.Tabs.setObjectName("Tabs")
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
@@ -32,7 +32,7 @@ class Ui_MainWindow(object):
         self.FName.setGeometry(QtCore.QRect(150, 110, 61, 20))
         self.FName.setObjectName("FName")
         self.Title = QtWidgets.QLabel(self.tab)
-        self.Title.setGeometry(QtCore.QRect(450, 10, 91, 21))
+        self.Title.setGeometry(QtCore.QRect(450, 10, 51, 21))
         self.Title.setObjectName("Title")
         self.Duration = QtWidgets.QLabel(self.tab)
         self.Duration.setGeometry(QtCore.QRect(720, 130, 49, 16))
@@ -44,7 +44,7 @@ class Ui_MainWindow(object):
         self.LName.setGeometry(QtCore.QRect(150, 180, 61, 20))
         self.LName.setObjectName("LName")
         self.Book = QtWidgets.QPushButton(self.tab)
-        self.Book.setGeometry(QtCore.QRect(920, 390, 81, 31))
+        self.Book.setGeometry(QtCore.QRect(740, 390, 81, 31))
         self.Book.setObjectName("Book")
         self.Date = QtWidgets.QLabel(self.tab)
         self.Date.setGeometry(QtCore.QRect(460, 100, 31, 20))
@@ -79,14 +79,20 @@ class Ui_MainWindow(object):
         self.Email = QtWidgets.QLabel(self.tab)
         self.Email.setGeometry(QtCore.QRect(160, 240, 49, 16))
         self.Email.setObjectName("Email")
+        self.Delete = QtWidgets.QPushButton(self.tab)
+        self.Delete.setGeometry(QtCore.QRect(830, 390, 81, 31))
+        self.Delete.setObjectName("Delete")
+        self.Update = QtWidgets.QPushButton(self.tab)
+        self.Update.setGeometry(QtCore.QRect(920, 390, 81, 31))
+        self.Update.setObjectName("Update")
         self.Tabs.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
         self.tableWidget = QtWidgets.QTableWidget(self.tab_2)
-        self.tableWidget.setGeometry(QtCore.QRect(40, 20, 731, 261))
+        self.tableWidget.setGeometry(QtCore.QRect(40, 20, 750, 300))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(7)
-        self.tableWidget.setRowCount(0)
+        self.tableWidget.setRowCount(20)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
@@ -102,6 +108,41 @@ class Ui_MainWindow(object):
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(6, item)
         self.Tabs.addTab(self.tab_2, "")
+        self.tab_3 = QtWidgets.QWidget()
+        self.tab_3.setObjectName("tab_3")
+        self.tableWidget_3 = QtWidgets.QTableWidget(self.tab_3)
+        self.tableWidget_3.setGeometry(QtCore.QRect(90, 10, 451, 381))
+        self.tableWidget_3.setObjectName("tableWidget_3")
+        self.tableWidget_3.setColumnCount(4)
+        self.tableWidget_3.setRowCount(20)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_3.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_3.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_3.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_3.setHorizontalHeaderItem(3, item)
+        self.Tabs.addTab(self.tab_3, "")
+        self.tab_4 = QtWidgets.QWidget()
+        self.tab_4.setObjectName("tab_4")
+        self.tableWidget_2 = QtWidgets.QTableWidget(self.tab_4)
+        self.tableWidget_2.setGeometry(QtCore.QRect(70, 30, 700, 400))
+        self.tableWidget_2.setObjectName("tableWidget_2")
+        self.tableWidget_2.setColumnCount(5)
+        self.tableWidget_2.setRowCount(10)
+        self.tableWidget_2.setColumnWidth(3, 200)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_2.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_2.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_2.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_2.setHorizontalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_2.setHorizontalHeaderItem(4, item)
+        self.Tabs.addTab(self.tab_4, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1044, 22))
@@ -114,8 +155,6 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.Tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-        self.Book.clicked.connect(self.show_popup)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -139,7 +178,9 @@ class Ui_MainWindow(object):
         self.Choice.setItemText(10, _translate("MainWindow", "Simulator2"))
         self.System.setText(_translate("MainWindow", "System"))
         self.Email.setText(_translate("MainWindow", "Email"))
-        self.Tabs.setTabText(self.Tabs.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
+        self.Delete.setText(_translate("MainWindow", "Delete"))
+        self.Update.setText(_translate("MainWindow", "Update"))
+        self.Tabs.setTabText(self.Tabs.indexOf(self.tab), _translate("MainWindow", "Booking"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "ID"))
         item = self.tableWidget.horizontalHeaderItem(1)
@@ -154,23 +195,28 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Duration"))
         item = self.tableWidget.horizontalHeaderItem(6)
         item.setText(_translate("MainWindow", "System"))
-        self.Tabs.setTabText(self.Tabs.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
+        self.Tabs.setTabText(self.Tabs.indexOf(self.tab_2), _translate("MainWindow", "Table"))
+        item = self.tableWidget_3.horizontalHeaderItem(0)
+        item.setText(_translate("MainWindow", "SysID"))
+        item = self.tableWidget_3.horizontalHeaderItem(1)
+        item.setText(_translate("MainWindow", "System"))
+        item = self.tableWidget_3.horizontalHeaderItem(2)
+        item.setText(_translate("MainWindow", "Available"))
+        item = self.tableWidget_3.horizontalHeaderItem(3)
+        item.setText(_translate("MainWindow", "Engineer"))
+        self.Tabs.setTabText(self.Tabs.indexOf(self.tab_3), _translate("MainWindow", "Systems"))
+        item = self.tableWidget_2.horizontalHeaderItem(0)
+        item.setText(_translate("MainWindow", "ID"))
+        item = self.tableWidget_2.horizontalHeaderItem(1)
+        item.setText(_translate("MainWindow", "First Name"))
+        item = self.tableWidget_2.horizontalHeaderItem(2)
+        item.setText(_translate("MainWindow", "Last Name"))
+        item = self.tableWidget_2.horizontalHeaderItem(3)
+        item.setText(_translate("MainWindow", "Contact"))
+        self.Tabs.setTabText(self.Tabs.indexOf(self.tab_4), _translate("MainWindow", "Engineers"))
 
-    def show_popup(self):
-        msg = QMessageBox()
-        msg.setWindowTitle("Result")
-        msg.setText("Success")
-        msg.setIcon(QMessageBox.Information)
-        msg.exec_()
 
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+def initTables():
     db = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -178,4 +224,131 @@ if __name__ == "__main__":
         database="tema"
     )
     cur = db.cursor()
+
+    cur.execute("DROP TABLE Bookings")
+    cur.execute("DROP TABLE Systems")
+    cur.execute("DROP TABLE Engineers")
+
+    cur.execute("CREATE TABLE Engineers ("
+               "ID SMALLINT PRIMARY KEY AUTO_INCREMENT, "
+               "First_name VARCHAR(25), "
+               "Last_name VARCHAR(25), "
+               "Contact VARCHAR(25))")
+
+    cur.execute("CREATE TABLE Systems ("
+                "SysID SMALLINT PRIMARY KEY AUTO_INCREMENT, "
+                "SystemType VARCHAR(25), "
+                "Available BOOL, "
+                "EngineerID SMALLINT, FOREIGN KEY(EngineerID) REFERENCES Engineers(ID))")
+
+    cur.execute("CREATE TABLE Bookings ("
+                "ID SMALLINT PRIMARY KEY AUTO_INCREMENT, "
+                "First_name VARCHAR(25), "
+                "Last_name VARCHAR(25), "
+                "Email VARCHAR(25),"
+                "BookDate DATE,"
+                "Duration TIME,"
+                "SystemBook SMALLINT, FOREIGN KEY(SystemBook) REFERENCES Systems(SysID))")
+
+    cur.execute("INSERT INTO Engineers (First_name, Last_name, Contact) VALUES (%s, %s, %s)", ("John", "Doe", "johndoe@gmail.com"))
+    db.commit()
+    cur.execute("INSERT INTO Engineers (First_name, Last_name, Contact) VALUES (%s, %s, %s)",
+                ("Bill", "Dough", "billd27@gmail.com"))
+    db.commit()
+    cur.execute("INSERT INTO Engineers (First_name, Last_name, Contact) VALUES (%s, %s, %s)",
+                ("Alex", "Martin", "marlex@gmail.com"))
+    db.commit()
+    cur.execute("INSERT INTO Engineers (First_name, Last_name, Contact) VALUES (%s, %s, %s)",
+                ("Andrew", "Tate", "cobratate@gmail.com"))
+    db.commit()
+
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("PC1", True, 1))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("PC2", True, 1))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("PC3", True, 1))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("PC4", True, 2))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("PC5", True, 2))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("Console1", True, 3))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("Console2", True, 3))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("Console3", True, 3))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("Console4", True, 3))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("Simulator1", True, 4))
+    db.commit()
+    cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("Simulator2", True, 4))
+    db.commit()
+
+
+def initUI():
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    for x in range(1,12):
+        ui.tableWidget_3.setItem(x-1, 0, QTableWidgetItem(str(x)))
+        ui.tableWidget_3.setItem(x-1,2, QTableWidgetItem("Yes"))
+
+    ui.tableWidget_3.setItem(0, 1, QTableWidgetItem('PC1'))
+    ui.tableWidget_3.setItem(1, 1, QTableWidgetItem('PC2'))
+    ui.tableWidget_3.setItem(2, 1, QTableWidgetItem('PC3'))
+    ui.tableWidget_3.setItem(3, 1, QTableWidgetItem('PC4'))
+    ui.tableWidget_3.setItem(4, 1, QTableWidgetItem('PC5'))
+    ui.tableWidget_3.setItem(5, 1, QTableWidgetItem('Console1'))
+    ui.tableWidget_3.setItem(6, 1, QTableWidgetItem('Console2'))
+    ui.tableWidget_3.setItem(7, 1, QTableWidgetItem('Console3'))
+    ui.tableWidget_3.setItem(8, 1, QTableWidgetItem('Console4'))
+    ui.tableWidget_3.setItem(9, 1, QTableWidgetItem('Simulator1'))
+    ui.tableWidget_3.setItem(10, 1, QTableWidgetItem('Simulator2'))
+
+    ui.tableWidget_3.setItem(0, 3, QTableWidgetItem('1'))
+    ui.tableWidget_3.setItem(1, 3, QTableWidgetItem('1'))
+    ui.tableWidget_3.setItem(2, 3, QTableWidgetItem('1'))
+    ui.tableWidget_3.setItem(3, 3, QTableWidgetItem('2'))
+    ui.tableWidget_3.setItem(4, 3, QTableWidgetItem('2'))
+    ui.tableWidget_3.setItem(5, 3, QTableWidgetItem('3'))
+    ui.tableWidget_3.setItem(6, 3, QTableWidgetItem('3'))
+    ui.tableWidget_3.setItem(7, 3, QTableWidgetItem('3'))
+    ui.tableWidget_3.setItem(8, 3, QTableWidgetItem('3'))
+    ui.tableWidget_3.setItem(9, 3, QTableWidgetItem('4'))
+    ui.tableWidget_3.setItem(10, 3, QTableWidgetItem('4'))
+
+
+    for x in range(1, 5):
+        ui.tableWidget_2.setItem(x - 1, 0, QTableWidgetItem(str(x)))
+
+    ui.tableWidget_2.setItem(0, 1, QTableWidgetItem("John"))
+    ui.tableWidget_2.setItem(0, 2, QTableWidgetItem("Doe"))
+    ui.tableWidget_2.setItem(0, 3, QTableWidgetItem("johndoe@gmail.com"))
+    ui.tableWidget_2.setItem(1, 1, QTableWidgetItem("Bill"))
+    ui.tableWidget_2.setItem(1, 2, QTableWidgetItem("Dough"))
+    ui.tableWidget_2.setItem(1, 3, QTableWidgetItem("billd27@gmail.com"))
+    ui.tableWidget_2.setItem(2, 1, QTableWidgetItem("Alex"))
+    ui.tableWidget_2.setItem(2, 2, QTableWidgetItem("Martin"))
+    ui.tableWidget_2.setItem(2, 3, QTableWidgetItem("marlex@gmail.com"))
+    ui.tableWidget_2.setItem(3, 1, QTableWidgetItem("Andrew"))
+    ui.tableWidget_2.setItem(3, 2, QTableWidgetItem("Tate"))
+    ui.tableWidget_2.setItem(3, 3, QTableWidgetItem("cobratate@gmail.com"))
+
+    ui.Book.clicked.connect(show_popup)
+
+
+def show_popup():
+    msg = QMessageBox()
+    msg.setWindowTitle("Result")
+    msg.setText("Success")
+    msg.setIcon(QMessageBox.Information)
+    msg.exec_()
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    initUI()
+    initTables()
+    MainWindow.show()
     sys.exit(app.exec_())
