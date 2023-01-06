@@ -27,6 +27,9 @@ class Ui_MainWindow(object):
         self.Tabs.setObjectName("Tabs")
         self.Booking = QtWidgets.QWidget()
         self.Booking.setObjectName("tab")
+        self.Update = QtWidgets.QPushButton(self.Booking)
+        self.Update.setGeometry(QtCore.QRect(830, 390, 81, 31))
+        self.Update.setObjectName("Update")
         self.First_name = QtWidgets.QLineEdit(self.Booking)
         self.First_name.setGeometry(QtCore.QRect(90, 130, 181, 31))
         self.First_name.setText("")
@@ -84,12 +87,6 @@ class Ui_MainWindow(object):
         self.Email = QtWidgets.QLabel(self.Booking)
         self.Email.setGeometry(QtCore.QRect(160, 240, 49, 16))
         self.Email.setObjectName("Email")
-        self.Delete = QtWidgets.QPushButton(self.Booking)
-        self.Delete.setGeometry(QtCore.QRect(830, 390, 81, 31))
-        self.Delete.setObjectName("Delete")
-        self.Update = QtWidgets.QPushButton(self.Booking)
-        self.Update.setGeometry(QtCore.QRect(920, 390, 81, 31))
-        self.Update.setObjectName("Update")
         self.Tabs.addTab(self.Booking, "")
         self.Table = QtWidgets.QWidget()
         self.Table.setObjectName("Table")
@@ -112,6 +109,16 @@ class Ui_MainWindow(object):
         self.tableWidget.setHorizontalHeaderItem(5, item)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(6, item)
+        self.Delete = QtWidgets.QPushButton(self.Table)
+        self.Delete.setGeometry(QtCore.QRect(930, 20, 81, 31))
+        self.Delete.setObjectName("Delete")
+        self.InputID = QtWidgets.QLineEdit(self.Table)
+        self.InputID.setGeometry(QtCore.QRect(800, 20, 111, 31))
+        self.InputID.setText("")
+        self.InputID.setObjectName("InputID")
+        self.ID = QtWidgets.QLabel(self.Table)
+        self.ID.setGeometry(QtCore.QRect(850, 0, 21, 20))
+        self.ID.setObjectName("ID")
         self.Tabs.addTab(self.Table, "")
         self.Systems = QtWidgets.QWidget()
         self.Systems.setObjectName("tab_3")
@@ -160,10 +167,12 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.Tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.Book.clicked.connect(self.addValues)
+        self.Delete.clicked.connect(self.deleteValues)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "App"))
         self.FName.setText(_translate("MainWindow", "First Name"))
         self.Title.setText(_translate("MainWindow", "Booking"))
         self.Duration.setText(_translate("MainWindow", "Duration"))
@@ -183,7 +192,6 @@ class Ui_MainWindow(object):
         self.Choice.setItemText(10, _translate("MainWindow", "Simulator2"))
         self.System.setText(_translate("MainWindow", "System"))
         self.Email.setText(_translate("MainWindow", "Email"))
-        self.Delete.setText(_translate("MainWindow", "Delete"))
         self.Update.setText(_translate("MainWindow", "Update"))
         self.Tabs.setTabText(self.Tabs.indexOf(self.Booking), _translate("MainWindow", "Booking"))
         item = self.tableWidget.horizontalHeaderItem(0)
@@ -200,6 +208,8 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Duration"))
         item = self.tableWidget.horizontalHeaderItem(6)
         item.setText(_translate("MainWindow", "System"))
+        self.Delete.setText(_translate("MainWindow", "Delete"))
+        self.ID.setText(_translate("MainWindow", "ID"))
         self.Tabs.setTabText(self.Tabs.indexOf(self.Table), _translate("MainWindow", "Table"))
         item = self.tableWidget_3.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "SysID"))
@@ -256,7 +266,6 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setItem(3, 1, QTableWidgetItem("Andrew"))
         self.tableWidget_2.setItem(3, 2, QTableWidgetItem("Tate"))
         self.tableWidget_2.setItem(3, 3, QTableWidgetItem("cobratate@gmail.com"))
-        self.Book.clicked.connect(self.addValues)
 
     def addValues(self):
         fname = self.First_name.text()
@@ -270,10 +279,10 @@ class Ui_MainWindow(object):
         check = duration.hour() * 3600 + duration.minute() * 60 + duration.second()
 
         if fname and lname and email and date and duration and system is not None:
-            if '@.com' in email:
+            if '@' in email and '.com' in email:
                 if check != 0:
+                    self.tableWidget.insertRow(self.rowCount)
                     self.rowCount += 1
-                    self.tableWidget.setRowCount(self.rowCount)
                     self.tableWidget.setItem(self.rowCount - 1, 0, QTableWidgetItem(str(self.rowCount)))
                     self.tableWidget.setItem(self.rowCount - 1, 1, QTableWidgetItem(fname))
                     self.tableWidget.setItem(self.rowCount - 1, 2, QTableWidgetItem(lname))
@@ -307,6 +316,23 @@ class Ui_MainWindow(object):
             msg.setIcon(QMessageBox.Information)
             msg.exec_()
 
+    def deleteValues(self):
+        id = self.InputID.text()
+        if id != "":
+            deleteValues(id)
+            msg = QMessageBox()
+            msg.setWindowTitle("Result")
+            msg.setText("Booking deleted")
+            msg.setIcon(QMessageBox.Information)
+            msg.exec_()
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Result")
+            msg.setText("Please input ID of booking to delete")
+            msg.setIcon(QMessageBox.Information)
+            msg.exec_()
+
+
 
 def initTables():
     db = mysql.connector.connect(
@@ -316,10 +342,6 @@ def initTables():
         database="tema"
     )
     cur = db.cursor()
-
-    cur.execute("DROP TABLE Bookings")
-    cur.execute("DROP TABLE Systems")
-    cur.execute("DROP TABLE Engineers")
 
     cur.execute("CREATE TABLE Engineers ("
                "ID SMALLINT PRIMARY KEY AUTO_INCREMENT, "
@@ -337,7 +359,7 @@ def initTables():
                 "ID SMALLINT PRIMARY KEY, "
                 "First_name VARCHAR(25), "
                 "Last_name VARCHAR(25), "
-                "Email VARCHAR(25),"
+                "Email VARCHAR(25) UNIQUE,"
                 "BookDate DATE,"
                 "Duration TIME NOT NULL,"
                 "SystemBook SMALLINT, FOREIGN KEY(SystemBook) REFERENCES Systems(SysID))")
@@ -351,7 +373,7 @@ def initTables():
                 ("Alex", "Martin", "marlex@gmail.com"))
     db.commit()
     cur.execute("INSERT INTO Engineers (First_name, Last_name, Contact) VALUES (%s, %s, %s)",
-                ("Andrew", "Tate", "cobratate@gmail.com"))
+                ("Andrew", "Daniel", "dandrew@gmail.com"))
     db.commit()
 
     cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("PC1", True, 1))
@@ -377,7 +399,6 @@ def initTables():
     cur.execute("INSERT INTO Systems (SystemType, Available, EngineerID) VALUES (%s, %s, %s)", ("Simulator2", True, 4))
     db.commit()
 
-
 def insertValues(count, fname, lname, email, date, duration, sysnr):
     db = mysql.connector.connect(
         host="localhost",
@@ -393,7 +414,30 @@ def insertValues(count, fname, lname, email, date, duration, sysnr):
     except mysql.connector.Error as error:
         print(error)
 
+def deleteValues(id):
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="root",
+        database="tema"
+    )
+    cur = db.cursor()
+    try:
+        cur.execute("DELETE FROM Bookings WHERE ID=" + id)
+    except mysql.connector.Error as error:
+        print(error)
 
+def removeTables():
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="root",
+        database="tema"
+    )
+    cur = db.cursor()
+    cur.execute("DROP TABLE Bookings")
+    cur.execute("DROP TABLE Systems")
+    cur.execute("DROP TABLE Engineers")
 
 if __name__ == "__main__":
     import sys
@@ -401,6 +445,7 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
+    removeTables()
     ui.initValues()
     initTables()
     MainWindow.show()
