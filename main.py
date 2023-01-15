@@ -168,7 +168,8 @@ class Ui_MainWindow(object):
         self.Tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.Book.clicked.connect(self.addValues)
-        self.Delete.clicked.connect(self.deleteValues)
+        self.Delete.clicked.connect(self.delete)
+        self.Update.clicked.connect(self.update)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -278,45 +279,49 @@ class Ui_MainWindow(object):
 
         check = duration.hour() * 3600 + duration.minute() * 60 + duration.second()
 
-        if fname and lname and email and date and duration and system is not None:
-            if '@' in email and '.com' in email:
-                if check != 0:
-                    self.tableWidget.insertRow(self.rowCount)
-                    self.rowCount += 1
-                    self.tableWidget.setItem(self.rowCount - 1, 0, QTableWidgetItem(str(self.rowCount)))
-                    self.tableWidget.setItem(self.rowCount - 1, 1, QTableWidgetItem(fname))
-                    self.tableWidget.setItem(self.rowCount - 1, 2, QTableWidgetItem(lname))
-                    self.tableWidget.setItem(self.rowCount - 1, 3, QTableWidgetItem(email))
-                    self.tableWidget.setItem(self.rowCount - 1, 4, QTableWidgetItem(date))
-                    self.tableWidget.setItem(self.rowCount - 1, 5, QTableWidgetItem(duration.toString("hh:mm")))
-                    self.tableWidget.setItem(self.rowCount - 1, 6, QTableWidgetItem(system))
-                    duration = duration.toString("hhmm")
-                    insertValues(self.rowCount, fname, lname, email, date, duration, sysnr + 1)
-                    msg = QMessageBox()
-                    msg.setWindowTitle("Result")
-                    msg.setText("Success")
-                    msg.setIcon(QMessageBox.Information)
-                    msg.exec_()
-                else:
-                    msg = QMessageBox()
-                    msg.setWindowTitle("Result")
-                    msg.setText("Duration must be greater than 0")
-                    msg.setIcon(QMessageBox.Information)
-                    msg.exec_()
-            else:
-                msg = QMessageBox()
-                msg.setWindowTitle("Result")
-                msg.setText("Wrong email")
-                msg.setIcon(QMessageBox.Information)
-                msg.exec_()
-        else:
+        if fname and lname and email and date and duration and system is None:
             msg = QMessageBox()
             msg.setWindowTitle("Result")
-            msg.setText("One or more inputs in empty")
+            msg.setText("One or more inputs is empty")
+            msg.setIcon(QMessageBox.Information)
+            msg.exec_()
+        elif '@' not in email and '.com' not in email:
+            msg = QMessageBox()
+            msg.setWindowTitle("Result")
+            msg.setText("Wrong email (must contain @ and .com or is already used)")
+            msg.setIcon(QMessageBox.Information)
+            msg.exec_()
+        elif check == 0:
+            msg = QMessageBox()
+            msg.setWindowTitle("Result")
+            msg.setText("Duration must be greater than 0")
+            msg.setIcon(QMessageBox.Information)
+            msg.exec_()
+        elif any(char.isdigit() for char in fname) is True or any(char.isdigit() for char in lname) is True:
+            msg = QMessageBox()
+            msg.setWindowTitle("Result")
+            msg.setText("Names can't contain numbers")
+            msg.setIcon(QMessageBox.Information)
+            msg.exec_()
+        else:
+            self.tableWidget.insertRow(self.rowCount)
+            self.rowCount += 1
+            self.tableWidget.setItem(self.rowCount - 1, 0, QTableWidgetItem(str(self.rowCount)))
+            self.tableWidget.setItem(self.rowCount - 1, 1, QTableWidgetItem(fname))
+            self.tableWidget.setItem(self.rowCount - 1, 2, QTableWidgetItem(lname))
+            self.tableWidget.setItem(self.rowCount - 1, 3, QTableWidgetItem(email))
+            self.tableWidget.setItem(self.rowCount - 1, 4, QTableWidgetItem(date))
+            self.tableWidget.setItem(self.rowCount - 1, 5, QTableWidgetItem(duration.toString("hh:mm")))
+            self.tableWidget.setItem(self.rowCount - 1, 6, QTableWidgetItem(system))
+            duration = duration.toString("hhmm")
+            insertValues(self.rowCount, fname, lname, email, date, duration, sysnr + 1)
+            msg = QMessageBox()
+            msg.setWindowTitle("Result")
+            msg.setText("Success")
             msg.setIcon(QMessageBox.Information)
             msg.exec_()
 
-    def deleteValues(self):
+    def delete(self):
         id = self.InputID.text()
         if id != "":
             deleteValues(id)
@@ -325,6 +330,8 @@ class Ui_MainWindow(object):
             msg.setText("Booking deleted")
             msg.setIcon(QMessageBox.Information)
             msg.exec_()
+            self.rowCount -= 1
+            self.tableWidget.setRowCount(self.rowCount)
         else:
             msg = QMessageBox()
             msg.setWindowTitle("Result")
@@ -332,6 +339,42 @@ class Ui_MainWindow(object):
             msg.setIcon(QMessageBox.Information)
             msg.exec_()
 
+    def update(self):
+        fname = self.First_name.text()
+        lname = self.Last_name.text()
+        email = self.Contact.text()
+        date = self.Calendar.selectedDate().toString("yyyy-MM-d")
+        duration = self.Time.time()
+        system = self.Choice.currentText()
+        sysnr = self.Choice.currentIndex()
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="root",
+            database="tema"
+        )
+        cur = db.cursor()
+        try:
+            result = cur.execute("SELECT Email from Bookings")
+            print(result)
+        except mysql.connector.Error as error:
+            print(error)
+        if email in result:
+            try:
+                cur.execute("UPDATE Bookings SET Date='{}', Duration='{}',System='{}' WHERE Email='{}'".format(date,duration,system,email))
+            except mysql.connector.Error as error:
+                print(error)
+            msg = QMessageBox()
+            msg.setWindowTitle("Result")
+            msg.setText("Booking updated")
+            msg.setIcon(QMessageBox.Information)
+            msg.exec_()
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Result")
+            msg.setText("Wrong email")
+            msg.setIcon(QMessageBox.Information)
+            msg.exec_()
 
 
 def initTables():
@@ -424,6 +467,19 @@ def deleteValues(id):
     cur = db.cursor()
     try:
         cur.execute("DELETE FROM Bookings WHERE ID=" + id)
+    except mysql.connector.Error as error:
+        print(error)
+
+def updateValues(email, date, duration, sysnr):
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="root",
+        database="tema"
+    )
+    cur = db.cursor()
+    try:
+        cur.execute("UPDATE Bookings SET Date=" + date + ", Duration=" + duration + ",System=" + sysnr + " WHERE Email=" + email)
     except mysql.connector.Error as error:
         print(error)
 
