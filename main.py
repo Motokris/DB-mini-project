@@ -340,41 +340,23 @@ class Ui_MainWindow(object):
             msg.exec_()
 
     def update(self):
-        fname = self.First_name.text()
-        lname = self.Last_name.text()
         email = self.Contact.text()
         date = self.Calendar.selectedDate().toString("yyyy-MM-d")
         duration = self.Time.time()
         system = self.Choice.currentText()
         sysnr = self.Choice.currentIndex()
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            passwd="root",
-            database="tema"
-        )
-        cur = db.cursor()
-        try:
-            result = cur.execute("SELECT Email from Bookings")
-            print(result)
-        except mysql.connector.Error as error:
-            print(error)
-        if email in result:
-            try:
-                cur.execute("UPDATE Bookings SET Date='{}', Duration='{}',System='{}' WHERE Email='{}'".format(date,duration,system,email))
-            except mysql.connector.Error as error:
-                print(error)
-            msg = QMessageBox()
-            msg.setWindowTitle("Result")
-            msg.setText("Booking updated")
-            msg.setIcon(QMessageBox.Information)
-            msg.exec_()
-        else:
-            msg = QMessageBox()
-            msg.setWindowTitle("Result")
-            msg.setText("Wrong email")
-            msg.setIcon(QMessageBox.Information)
-            msg.exec_()
+        msg = QMessageBox()
+        msg.setWindowTitle("Result")
+        msg.setText("Booking updated")
+        msg.setIcon(QMessageBox.Information)
+        msg.exec_()
+        updateValues(email, date, duration, system)
+        # else:
+        # msg = QMessageBox()
+        # msg.setWindowTitle("Result")
+        # msg.setText("Wrong email")
+        # msg.setIcon(QMessageBox.Information)
+        # msg.exec_()
 
 
 def initTables():
@@ -467,10 +449,11 @@ def deleteValues(id):
     cur = db.cursor()
     try:
         cur.execute("DELETE FROM Bookings WHERE ID=" + id)
+        db.commit()
     except mysql.connector.Error as error:
         print(error)
 
-def updateValues(email, date, duration, sysnr):
+def updateValues(email, date, duration, system):
     db = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -479,7 +462,8 @@ def updateValues(email, date, duration, sysnr):
     )
     cur = db.cursor()
     try:
-        cur.execute("UPDATE Bookings SET Date=" + date + ", Duration=" + duration + ",System=" + sysnr + " WHERE Email=" + email)
+        cur.execute("UPDATE Bookings SET Date=" + date + ", Duration=" + duration + ",System=" + system + " WHERE Email=" + email)
+        db.commit()
     except mysql.connector.Error as error:
         print(error)
 
